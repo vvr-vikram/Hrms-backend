@@ -1,0 +1,191 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+    banner-mode: off
+    
+  # Database Configuration - Using MySQL
+  datasource:
+    url: jdbc:mysql://localhost:3306/hrms_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 1254
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: HikariPool-HRMS
+      
+  jpa:
+    database: MYSQL
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: none  # Change to 'update' for development, 'validate' for production
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    open-in-view: false
+    
+  # H2 Console Configuration (Optional - for development)
+  # Uncomment this section if you want to use H2 console with MySQL (not recommended)
+  # Note: H2 console only works with H2 database, not with MySQL
+  h2:
+    console:
+      enabled: false  # Keep false when using MySQL
+      path: /h2-console
+      settings:
+        web-allow-others: false
+    
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    time-zone: Asia/Kolkata
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: non_null
+    
+server:
+  port: 8080
+  servlet:
+    context-path: /  # Root context - no prefix
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+    include-exception: false
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+  tomcat:
+    connection-timeout: 20000
+    max-connections: 10000
+    accept-count: 100
+    threads:
+      max: 200
+      min-spare: 10
+
+logging:
+  level:
+    root: INFO
+    com.hrms: DEBUG
+    org.hibernate: INFO
+    org.hibernate.SQL: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.boot.web: DEBUG
+    com.zaxxer.hikari: DEBUG
+    org.springdoc: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+  file:
+    name: logs/hrms-application.log
+    max-size: 10MB
+    max-history: 30
+    total-size-cap: 100MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+    metrics:
+      enabled: true
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs  # Changed from /api-docs to standard path
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    try-it-out-enabled: true  # Fixed syntax (removed parentheses)
+    filter: true
+    display-request-duration: true
+    doc-expansion: none
+  show-actuator: true
+  writer-with-default-pretty-printer: true
+
+# Custom application properties
+app:
+  name: HRMS Backend System
+  version: 1.0.0
+  description: Complete Human Resource Management System
+  
+  attendance:
+    check-in-time: "09:00"
+    check-out-time: "18:00"
+    grace-period-minutes: 15
+    overtime-threshold-minutes: 30
+    working-hours-per-day: 8.0
+    late-threshold-minutes: 15
+    half-day-threshold-minutes: 240
+    
+  leave:
+    max-annual-leave-days: 20
+    max-casual-leave-days: 12
+    max-sick-leave-days: 15
+    leave-carry-forward-limit: 5
+    max-consecutive-leave-days: 30
+    
+  payroll:
+    working-days-per-month: 22
+    pf-employee-share: 12.0
+    pf-employer-share: 12.0
+    professional-tax-monthly: 200.0
+    tax-free-limit: 250000
+    hra-percentage: 25.0
+    da-percentage: 10.0
+    ta-percentage: 5.0
+    ma-percentage: 3.0
+    
+  employee:
+    employee-code-prefix: "EMP"
+    employee-code-length: 8  # Changed from 6 to 8 for better uniqueness
+    default-password: "Welcome@123"
+    
+  jwt:
+    secret: "hrmsSecretKey2024SecureJWTTokenForAuthenticationAndAuthorization"
+    expiration-ms: 86400000  # 24 hours
+    refresh-expiration-ms: 604800000  # 7 days
+    issuer: "HRMS-System"
+    
+  pagination:
+    default-page-size: 20
+    max-page-size: 100
+    default-sort-by: "id"
+    default-sort-direction: "asc"
+
+# Info endpoint custom properties
+info:
+  app:
+    name: ${app.name}
+    version: ${app.version}
+    description: ${app.description}
+  build:
+    artifact: hrms-backend
+    name: HRMS Backend
+    version: 1.0.0
+    group: com.hrms
